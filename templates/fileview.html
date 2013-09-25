@@ -1,0 +1,6 @@
+{% extends "layout.html" %}
+{% block content %}
+<h3>File: “/{{ path }}”</h3>
+<p><a href="#" onclick="history.go(-1); return false;">Go back</a></p>
+{% block file %}{% endblock %}
+{% endblock %}

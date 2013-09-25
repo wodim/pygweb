@@ -1,0 +1,28 @@
+body {
+    font-family: "Arial", sans-serif;
+    font-size: 10pt;
+}
+
+pre {
+    font-family: "Ubuntu Mono", "Consolas", "Lucida Console", monospace;
+    font-size: 10pt;
+}
+
+img {
+    display: block;
+}
+
+table {
+}
+
+td, th {
+    padding-left: 20px;
+}
+
+td.name {
+    font-weight: bold;
+}
+
+th {
+    text-align: left;
+}
