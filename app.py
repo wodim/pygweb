@@ -2,17 +2,14 @@
 
 from flask import Flask, render_template, request, g, flash, session, abort
 
-from pygweb.views import ProjectView
+from pygweb.views import *
 
 import random, string
 
 app = Flask(__name__)
 app.debug = True
 
-@app.route('/')
-def index():
-    abort(404)
-
+ReposView.register(app)
 ProjectView.register(app)
 
 if __name__ == '__main__':
