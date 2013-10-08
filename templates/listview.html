@@ -3,6 +3,7 @@
 <h3>File listing for “/{{ path }}”</h3>
 <table>
     <tr>
+        <th><!-- icon --></th>
         <th>Name</th>
         <th>Mimetype</th>
         <th>Size</th>
@@ -10,6 +11,7 @@
     </tr>
 {% for item in list %}
     <tr>
+        <td><img src="{{ item.icon }}" /></td>
         <td class="name"><a href="{{ item.href }}">{{ item.name }}</a></td>
         <td>{{ item.mimetype }}</td>
         <td>{{ item.size }}</td>

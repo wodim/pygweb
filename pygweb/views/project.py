@@ -7,7 +7,7 @@ from flask import request, render_template, flash, session, redirect, url_for, a
 from flask.ext.classy import FlaskView, route
 
 from pygments import highlight
-from pygments.lexers import *
+from pygments.lexers import guess_lexer
 from pygments.formatters import HtmlFormatter
 
 from ..config import projects 
@@ -35,7 +35,6 @@ class ProjectView(FlaskView):
         path = os.path.normpath('/'.join(params[2:]))
         full_path = os.path.normpath('%s%s' % (projects[project], path))
         
-        print full_path
         # directory escaping
         if '..' in full_path:
             abort(403)
@@ -64,20 +63,20 @@ class ProjectView(FlaskView):
                         mimetype = magic.from_file(this_path, mime=True)
                         size = os.path.getsize(this_path)
                         unit = 'bytes'
-                        if size > 1024:
+                        if size > 2048: # 2kb min
                             size /= 1024
                             unit = 'KB'
-                        if size > 1024:
-                            size /= 1024
-                            unit = 'MB'
+                            if size > 1024:
+                                size /= 1024
+                                unit = 'MB'
                         size = '%s %s' % (size, unit)
                         mtime = datetime.fromtimestamp(os.path.getmtime(this_path))
                     except IOError:
                         mimetype = None
                     if os.path.isdir(this_path):
-                        dirs.append({'name': entry, 'href': '/%s/blob/%s/%s/' % (project, path, entry), 'type': 'dir', 'mimetype': mimetype, 'size': size, 'mtime': mtime})
+                        dirs.append({'icon': url_for('static', filename='folder.png'), 'name': entry, 'href': '/%s/blob/%s/%s/' % (project, path, entry), 'type': 'dir', 'mimetype': mimetype, 'size': size, 'mtime': mtime})
                     elif os.path.isfile(this_path):
-                        files.append({'name': entry, 'href': '/%s/blob/%s/%s' % (project, path, entry), 'type': 'file', 'mimetype': mimetype, 'size': size, 'mtime': mtime})
+                        files.append({'icon': url_for('static', filename='file.png'), 'name': entry, 'href': '/%s/blob/%s/%s' % (project, path, entry), 'type': 'file', 'mimetype': mimetype, 'size': size, 'mtime': mtime})
 
                 list = dirs + files
 
