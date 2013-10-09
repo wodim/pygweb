@@ -11,6 +11,7 @@ from pygments.lexers import guess_lexer
 from pygments.formatters import HtmlFormatter
 
 from ..config import projects 
+from ..hexview import hexview
 
 class ProjectView(FlaskView):
     route_base = '/'
@@ -93,7 +94,7 @@ class ProjectView(FlaskView):
                 elif mimetype.startswith('image/'):
                     return render_template('imageview.html', src=src, path=path)
                 else:
-                    return render_template('rawview.html', src=src, path=path)
+                    return render_template('rawview.html', src=src, content=hexview(content), path=path)
         elif method == 'raw':
             if os.path.isfile(full_path):
                 with open(full_path, 'r') as file:
