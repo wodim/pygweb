@@ -56,8 +56,7 @@ class ProjectView(FlaskView):
     def _discerner(self, project, method, path, full_path):
         if method == 'blob':
             cached = redis.get(key(full_path))
-            if cached:
-                print "Cache HIT: %s" % key(full_path)
+            if cached is not None:
                 return cached
 
             print "Cache MISS: %s" % key(full_path)
@@ -104,6 +103,9 @@ class ProjectView(FlaskView):
                     response = render_template('imageview.html', src=src, path=path)
                 else:
                     response = render_template('rawview.html', src=src, path=path)
+
+            redis.set(key(full_path), response)
+            return response
         elif method == 'raw':
             if os.path.isfile(full_path):
                 with open(full_path, 'r') as file:
@@ -113,7 +115,4 @@ class ProjectView(FlaskView):
                 if mimetype.startswith('text/'): # this is an exception
                     mimetype = 'text/plain'
                     
-                response = Response(content, mimetype=mimetype)
-                
-        redis.set(key(full_path), response)
-        return response
+                return Response(content, mimetype=mimetype)
