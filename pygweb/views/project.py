@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-import random, string
-import os, magic
+import random
+import string
+import os
+import magic
 from datetime import datetime
 
 from flask import request, render_template, flash, session, redirect, url_for, abort, Response
@@ -10,8 +12,9 @@ from pygments import highlight
 from pygments.lexers import guess_lexer
 from pygments.formatters import HtmlFormatter
 
-from ..config import projects 
-from ..hexview import hexview
+from ..config import projects, _cfg, _cfgi 
+# from ..hexview import hexview
+from ..cache import redis, key
 
 class ProjectView(FlaskView):
     route_base = '/'
@@ -50,8 +53,14 @@ class ProjectView(FlaskView):
         
         return output
         
-    def _discerner(self, project, method, path, full_path):            
+    def _discerner(self, project, method, path, full_path):
         if method == 'blob':
+            cached = redis.get(key(full_path))
+            if cached:
+                print "Cache HIT: %s" % key(full_path)
+                return cached
+
+            print "Cache MISS: %s" % key(full_path)
             if os.path.isdir(full_path):
                 dirs = [{'name': '..', 'href': '..', 'type': 'dir'}]
                 files = []
@@ -81,7 +90,7 @@ class ProjectView(FlaskView):
 
                 list = dirs + files
 
-                return render_template('listview.html', list=list, path=path)
+                response = render_template('listview.html', list=list, path=path)
             elif os.path.isfile(full_path):
                 with open(full_path, 'r') as file:
                     content = file.read()
@@ -90,11 +99,11 @@ class ProjectView(FlaskView):
                 src = '/%s/raw/%s' % (project, path)
                 if mimetype.startswith('text/') or mimetype == 'application/xml':
                     code = highlight(content, guess_lexer(content), HtmlFormatter(noclasses=True))
-                    return render_template('htmlview.html', content=code, path=path)
+                    response = render_template('htmlview.html', content=code, path=path)
                 elif mimetype.startswith('image/'):
-                    return render_template('imageview.html', src=src, path=path)
+                    response = render_template('imageview.html', src=src, path=path)
                 else:
-                    return render_template('rawview.html', src=src, content=hexview(content), path=path)
+                    response = render_template('rawview.html', src=src, path=path)
         elif method == 'raw':
             if os.path.isfile(full_path):
                 with open(full_path, 'r') as file:
@@ -104,4 +113,7 @@ class ProjectView(FlaskView):
                 if mimetype.startswith('text/'): # this is an exception
                     mimetype = 'text/plain'
                     
-                return Response(content, mimetype=mimetype)
+                response = Response(content, mimetype=mimetype)
+                
+        redis.set(key(full_path), response)
+        return response

@@ -11,3 +11,6 @@ projects = dict(config.items('projects'))
 
 if len(projects) == 0:
     raise Exception('No projects defined')
+
+_cfg = lambda section, key: config.get(section, key)
+_cfgi = lambda section, key: int(config.get(section, key))

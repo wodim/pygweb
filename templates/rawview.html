@@ -1,9 +1,12 @@
 {% extends "fileview.html" %}
 {% block file %}
 Your browser cannot display this file.<br />
-You can download it <a href="{{ src }}">here</a>.<br />
-<strong>Hexadecimal dump:</strong>
-<div class="bg">
-    <pre>{{ content }}</pre>
-</div>
+You can download it <a href="{{ src }}">here</a>.
+<!--
+    <br />
+    <strong>Hexadecimal dump:</strong>
+    <div class="bg">
+        <pre>{{ content }}</pre>
+    </div>
+-->
 {% endblock %}

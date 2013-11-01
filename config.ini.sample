@@ -1,0 +1,9 @@
+; mandatory trailing slash in path!
+
+[projects]
+hg556a = /home/scripts/code/hg556a/
+
+[redis]
+host = 127.0.0.1
+port = 6379
+prefix = pygwebtest
