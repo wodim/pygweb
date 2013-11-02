@@ -3,13 +3,14 @@ import random
 import string
 import os
 import magic
+import codecs
 from datetime import datetime
 
 from flask import request, render_template, flash, session, redirect, url_for, abort, Response
 from flask.ext.classy import FlaskView, route
 
 from pygments import highlight
-from pygments.lexers import guess_lexer
+from pygments.lexers import guess_lexer_for_filename
 from pygments.formatters import HtmlFormatter
 
 from ..config import projects, _cfg, _cfgi 
@@ -91,13 +92,14 @@ class ProjectView(FlaskView):
 
                 response = render_template('listview.html', list=list, path=path)
             elif os.path.isfile(full_path):
-                with open(full_path, 'r') as file:
+                with codecs.open(full_path, 'r', encoding='utf-8') as file:
                     content = file.read()
-                
-                mimetype = magic.from_buffer(content, mime=True)
+
+                mimetype = magic.from_file(full_path, mime=True)
                 src = '/%s/raw/%s' % (project, path)
                 if mimetype.startswith('text/') or mimetype == 'application/xml':
-                    code = highlight(content, guess_lexer(content), HtmlFormatter(noclasses=True))
+                    lexer = guess_lexer_for_filename(full_path, content)
+                    code = highlight(content, lexer, HtmlFormatter(noclasses=True))
                     response = render_template('htmlview.html', content=code, path=path)
                 elif mimetype.startswith('image/'):
                     response = render_template('imageview.html', src=src, path=path)
