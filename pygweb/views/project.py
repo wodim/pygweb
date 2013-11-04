@@ -92,8 +92,12 @@ class ProjectView(FlaskView):
 
                 response = render_template('listview.html', list=list, path=path)
             elif os.path.isfile(full_path):
-                with codecs.open(full_path, 'r', encoding='utf-8') as file:
-                    content = file.read()
+                try:
+                    with codecs.open(full_path, 'r', encoding='utf-8') as file:
+                        content = file.read()
+                except UnicodeDecodeError: # this is, binary
+                    with open(full_path, 'r') as file:
+                        content = file.read()
 
                 mimetype = magic.from_file(full_path, mime=True)
                 src = '/%s/raw/%s' % (project, path)
