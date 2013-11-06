@@ -10,8 +10,9 @@ from flask import request, render_template, flash, session, redirect, url_for, a
 from flask.ext.classy import FlaskView, route
 
 from pygments import highlight
-from pygments.lexers import guess_lexer_for_filename
+from pygments.lexers import guess_lexer_for_filename, guess_lexer
 from pygments.formatters import HtmlFormatter
+from pygments.util import ClassNotFound
 
 from ..config import projects, _cfg, _cfgi 
 # from ..hexview import hexview
@@ -102,7 +103,10 @@ class ProjectView(FlaskView):
                 mimetype = magic.from_file(full_path, mime=True)
                 src = '/%s/raw/%s' % (project, path)
                 if mimetype.startswith('text/') or mimetype == 'application/xml':
-                    lexer = guess_lexer_for_filename(full_path, content)
+                    try:
+                        lexer = guess_lexer_for_filename(full_path, content)
+                    except ClassNotFound: # there is no available lexer for this file name (for example, no extension)
+                        lexer = guess_lexer(content)
                     code = highlight(content, lexer, HtmlFormatter(noclasses=True))
                     response = render_template('htmlview.html', content=code, path=path)
                 elif mimetype.startswith('image/'):
