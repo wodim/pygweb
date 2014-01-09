@@ -13,6 +13,8 @@
     <tr>
         {% if item.icon %}
             <td><img src="{{ item.icon }}" alt="{{ item.name }}" /></td>
+        {% else %}
+            <td></td>
         {% endif %}
         <td class="name"><a href="{{ item.href }}">{{ item.name }}</a></td>
         <td>{{ item.mimetype }}</td>
