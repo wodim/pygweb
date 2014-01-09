@@ -11,7 +11,9 @@
     </tr>
 {% for item in list %}
     <tr>
-        <td><img src="{{ item.icon }}" /></td>
+        {% if item.icon %}
+            <td><img src="{{ item.icon }}" alt="{{ item.name }}" /></td>
+        {% endif %}
         <td class="name"><a href="{{ item.href }}">{{ item.name }}</a></td>
         <td>{{ item.mimetype }}</td>
         <td>{{ item.size }}</td>
