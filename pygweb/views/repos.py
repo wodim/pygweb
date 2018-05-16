@@ -9,8 +9,6 @@ class ReposView(FlaskView):
 
     @route('/')
     def get(self):
-        list = []
-        for project in list(projects.keys()):
-            list.append(project)
+        my_projects = [project for project in projects.keys()]
 
-        return render_template('reposview.html', list=list)
+        return render_template('reposview.html', list=my_projects)
