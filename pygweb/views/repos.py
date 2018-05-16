@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from flask import request, render_template, flash, session, redirect, url_for, abort, Response
-from flask.ext.classy import FlaskView, route
+from flask_classy import FlaskView, route
 
-from ..config import projects 
+from ..config import projects
 
 class ReposView(FlaskView):
     route_base = '/'
@@ -12,5 +12,5 @@ class ReposView(FlaskView):
         list = []
         for project in list(projects.keys()):
             list.append(project)
-            
+
         return render_template('reposview.html', list=list)

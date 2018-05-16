@@ -7,14 +7,14 @@ import codecs
 from datetime import datetime
 
 from flask import request, render_template, flash, session, redirect, url_for, abort, Response
-from flask.ext.classy import FlaskView, route
+from flask_classy import FlaskView, route
 
 from pygments import highlight
 from pygments.lexers import guess_lexer_for_filename, guess_lexer
 from pygments.formatters import HtmlFormatter
 from pygments.util import ClassNotFound
 
-from ..config import projects, _cfg, _cfgi 
+from ..config import projects, _cfg, _cfgi
 # from ..hexview import hexview
 from ..cache import redis, key
 
@@ -29,32 +29,32 @@ class ProjectView(FlaskView):
         project = params[0]
         if len(params) < 2:
             return redirect(url_for('ProjectView:get', fullurl='%s/%s' % (params[0], 'blob')))
-        
+
         if not project in projects:
             abort(404)
-        
+
         # i don't check for IndexError: i already trapped this in the "if" above
         method = params[1]
         if method not in ['blob', 'raw']:
             abort(404)
-        
+
         path = os.path.normpath('/'.join(params[2:]))
         full_path = os.path.normpath('%s%s' % (projects[project], path))
-        
+
         # directory escaping
         if '..' in full_path:
             abort(403)
-        
+
         # !TODO links may be a security problem. but this should be fixed
         if not os.path.exists(full_path) or os.path.islink(full_path):
             abort(404)
-            
+
         output = self._discerner(project, method, path, full_path)
         if output is None:
             abort(500)
-        
+
         return output
-        
+
     def _discerner(self, project, method, path, full_path):
         if method == 'blob':
             cached = redis.get(key(full_path))
@@ -65,7 +65,7 @@ class ProjectView(FlaskView):
             if os.path.isdir(full_path):
                 dirs = [{'name': '..', 'href': '..', 'type': 'dir'}]
                 files = []
-                
+
                 entries = os.listdir(full_path)
                 entries.sort()
                 for entry in entries:
@@ -120,9 +120,9 @@ class ProjectView(FlaskView):
             if os.path.isfile(full_path):
                 with open(full_path, 'r') as file:
                     content = file.read()
-                
+
                 mimetype = magic.from_buffer(content, mime=True)
                 if mimetype.startswith('text/'): # this is an exception
                     mimetype = 'text/plain'
-                    
+
                 return Response(content, mimetype=mimetype)
