@@ -80,8 +80,8 @@ class ProjectView(FlaskView):
                             if size > 1024:
                                 size /= 1024
                                 unit = 'MB'
-                        size = '%s %s' % (size, unit)
-                        mtime = datetime.fromtimestamp(os.path.getmtime(this_path))
+                        size = '%s %s' % (int(size), unit)
+                        mtime = datetime.fromtimestamp(os.path.getmtime(this_path)).strftime('%Y-%m-%d %H:%M:%S')
                     except IOError:
                         mimetype = None
                     if os.path.isdir(this_path):
