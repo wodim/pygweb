@@ -61,7 +61,7 @@ class ProjectView(FlaskView):
             if cached is not None:
                 return cached
 
-            print "Cache MISS: %s" % key(full_path)
+            print("Cache MISS: %s" % key(full_path))
             if os.path.isdir(full_path):
                 dirs = [{'name': '..', 'href': '..', 'type': 'dir'}]
                 files = []

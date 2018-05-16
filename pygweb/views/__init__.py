@@ -1,2 +1,2 @@
-from project import ProjectView
-from repos import ReposView
+from .project import ProjectView
+from .repos import ReposView
