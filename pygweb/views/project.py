@@ -70,6 +70,9 @@ class ProjectView(FlaskView):
                 entries.sort()
                 for entry in entries:
                     this_path = os.path.normpath('%s/%s' % (full_path, entry))
+                    mimetype = None
+                    size = '(unknown)'
+                    mtime = '(unknown)'
                     try:
                         mimetype = magic.from_file(this_path, mime=True)
                         size = os.path.getsize(this_path)
